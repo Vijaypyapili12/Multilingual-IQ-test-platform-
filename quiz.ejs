@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css"
+    integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+  <title>Quiz App</title>
+
+  <style>
+    body {
+      background-image: url("https://www.bergerpaints.com/colour-magazine/Upload/Quiz/Banner/quiz-bnr-nov19.jpg");
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      height: 45vh;
+      margin-top: 2rem;
+    }
+
+    #quiz-container {
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+      width: 400px; /* Set the width of the card */
+      background-color: rgba(255, 255, 255, 0.112);
+    }
+
+    #question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: rgb(48, 179, 181);
+      font-weight: 800;
+    }
+
+    .btn {
+      margin-bottom: 10px;
+      border: 2px solid #6c757d; /* Gray border */
+      border-radius: 5px; /* Rounded corners */
+      width: 100%; /* Make the buttons fill the width */
+      color: white;
+    }
+
+    .btn:hover {
+      border-color: #81b3e8; /* Blue border on hover */
+    }
+
+    .correct {
+      background-color: #4caf50; /* Green */
+    }
+
+    .incorrect {
+      background-color: #f44336; /* Red */
+    }
+
+    #next-btn {
+      background-color: rgb(48, 179, 181);
+      color: white;
+    }
+
+    #next-btn:hover {
+      background-color: rgb(78, 177, 178);
+    }
+
+    #timer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      color: #d5e3ef; /* Gray color for the timer */
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div id="quiz-container">
+      <div id="question"></div>
+      <div id="answer-buttons"></div>
+      <div id="timer">Time Left: <span id="time-left">20</span> seconds</div>
+      <button id="next-btn" class="btn" style="display: none;">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = {
+      english: [
+
+        {
+          question: "What is the opposite of the word 'brave'?",
+          answers: [
+            { text: "Cowardly", correct: true },
+            { text: "Timid", correct: false },
+            { text: "Fearless", correct: false },
+            { text: "Bold", correct: false }
+          ]
+        },
+        {
+          question: "Choose the word that is most similar to 'pinnacle':",
+          answers: [
+            { text: "Summit", correct: true },
+            { text: "Valley", correct: false },
+            { text: "Peak", correct: false },
+            { text: "Plateau", correct: false }
+          ]
+        },
+        {
+          question: "If 3 bananas cost Rs. 30, how much would 5 bananas cost?",
+          answers: [
+            { text: "Rs. 50", correct: false },
+            { text: "Rs. 45", correct: false },
+            { text: "Rs. 40", correct: true },
+            { text: "Rs. 35", correct: false }
+          ]
+        },
+        {
+          question: "What is the next number in the sequence: 1, 4, 9, 16, ...?",
+          answers: [
+            { text: "25", correct: true },
+            { text: "36", correct: false },
+            { text: "49", correct: false },
+            { text: "64", correct: false }
+          ]
+        },
+        {
+          question: "Which shape is the odd one out?",
+          answers: [
+            { text: "Square", correct: false },
+            { text: "Circle", correct: false },
+            { text: "Triangle", correct: false },
+            { text: "Oval", correct: true }
+          ]
+        },
+        {
+          question: "Complete the pattern: 2, 4, 6, __, 10, 12",
+          answers: [
+            { text: "7", correct: false },
+            { text: "8", correct: true },
+            { text: "9", correct: false },
+            { text: "11", correct: false }
+          ]
+        },
+        {
+          question: "If all fish live in water, and a goldfish is a fish, can we conclude that a goldfish lives in water?",
+          answers: [
+            { text: "Yes", correct: true },
+            { text: "No", correct: false }
+          ]
+        },
+        {
+          question: "If some fruits are sweet, and all sweet things are tasty, can we conclude that some fruits are tasty?",
+          answers: [
+            { text: "Yes", correct: true },
+            { text: "No", correct: false }
+          ]
+        },
+        {
+          question: "What is the opposite of the word 'expand'?",
+          answers: [
+            { text: "Contract", correct: true },
+            { text: "Extend", correct: false },
+            { text: "Enlarge", correct: false },
+            { text: "Stretch", correct: false }
+          ]
+        },
+        {
+          question: "Choose the word that is most similar to 'diligent':",
+          answers: [
+            { text: "Lazy", correct: false },
+            { text: "Hardworking", correct: true },
+            { text: "Careless", correct: false },
+            { text: "Indifferent", correct: false }
+          ]
+        },
+        {
+          question: "If 6 shirts cost Rs. 600, how much would 12 shirts cost?",
+          answers: [
+            { text: "Rs. 1200", correct: true },
+            { text: "Rs. 1000", correct: false },
+            { text: "Rs. 1100", correct: false },
+            { text: "Rs. 1300", correct: false }
+          ]
+        },
+        {
+          question: "What is the next number in the sequence: 2, 6, 12, 20, ...?",
+          answers: [
+            { text: "24", correct: false },
+            { text: "30", correct: false },
+            { text: "28", correct: false },
+            { text: "36", correct: true }
+          ]
+        }
+      ],
+      hindi: [
+        // Add questions in Hindi here
+
+        {
+          question: "शब्द 'बहादुर' का विलोम क्या है?",
+          answers: [
+            { text: "कायर", correct: true },
+            { text: "डरपोक", correct: false },
+            { text: "निडर", correct: false },
+            { text: "साहसी", correct: false }
+          ]
+        },
+        {
+          question: " 'पिनेकल' के सबसे ज्यादा समान शब्द का चयन करें:",
+          answers: [
+            { text: "शिखर", correct: true },
+            { text: "घाटी", correct: false },
+            { text: "शिखर", correct: false },
+            { text: "समतल", correct: false }
+          ]
+        },
+        {
+          question: "अगर 3 केले की कीमत है 30 रुपये, तो 5 केले की कीमत कितनी होगी?",
+          answers: [
+            { text: "50 रुपये", correct: false },
+            { text: "45 रुपये", correct: false },
+            { text: "40 रुपये", correct: true },
+            { text: "35 रुपये", correct: false }
+          ]
+        },
+        {
+          question: "क्रम संख्या में अगला संख्या क्या है: 1, 4, 9, 16, ...?",
+          answers: [
+            { text: "25", correct: true },
+            { text: "36", correct: false },
+            { text: "49", correct: false },
+            { text: "64", correct: false }
+          ]
+        },
+        {
+          question: "कौन सा आकार अलग है?",
+          answers: [
+            { text: "वर्ग", correct: false },
+            { text: "वृत्त", correct: false },
+            { text: "त्रिभुज", correct: false },
+            { text: "ओवल", correct: true }
+          ]
+        },
+        {
+          question: "पैटर्न पूरा करें: 2, 4, 6, __, 10, 12",
+          answers: [
+            { text: "7", correct: false },
+            { text: "8", correct: true },
+            { text: "9", correct: false },
+            { text: "11", correct: false }
+          ]
+        },
+        {
+          question: "यदि सभी मछलियाँ पानी में रहती हैं, और गोल्डफ़िश एक मछली है, तो क्या हम यह निष्कर्ष निकाल सकते हैं कि एक गोल्डफ़िश पानी में रहता है?",
+          answers: [
+            { text: "हाँ", correct: true },
+            { text: "नहीं", correct: false }
+          ]
+        },
+        {
+          question: "यदि कुछ फल मीठे हैं, और सभी मीठी चीजें स्वादिष्ट हैं, तो क्या हम यह निष्कर्ष निकाल सकते हैं कि कुछ फल स्वादिष्ट हैं?",
+          answers: [
+            { text: "हाँ", correct: true },
+            { text: "नहीं", correct: false }
+          ]
+        },
+        {
+          question: "शब्द 'विस्तार' का विलोम क्या है?",
+          answers: [
+            { text: "संक्षेप", correct: true },
+            { text: "फैलाव", correct: false },
+            { text: "बढ़ना", correct: false },
+            { text: "तानना", correct: false }
+          ]
+        },
+        {
+          question: "'मेहनती' के सबसे ज्यादा समान शब्द का चयन करें:",
+          answers: [
+            { text: "आलसी", correct: false },
+            { text: "मेहनती", correct: true },
+            { text: "लापरवाह", correct: false },
+            { text: "उदासीन", correct: false }
+          ]
+        },
+        {
+          question: "यदि 6 कमीजें 600 रुपये में हैं, तो 12 कमीजें कितने में होंगी?",
+          answers: [
+            { text: "1200 रुपये", correct: true },
+            { text: "1000 रुपये", correct: false },
+            { text: "1100 रुपये", correct: false },
+            { text: "1300 रुपये", correct: false }
+          ]
+        },
+        {
+          question: "क्रम संख्या में अगला संख्या क्या है: 2, 6, 12, 20, ...?",
+          answers: [
+            { text: "24", correct: false },
+            { text: "30", correct: false },
+            { text: "28", correct: false },
+            { text: "36", correct: true }
+          ]
+        }
+
+      ]
+    };
+
+    const questionElement = document.getElementById("question");
+    const answerButtons = document.getElementById("answer-buttons");
+    const nextButton = document.getElementById("next-btn");
+    const timeLeftElement = document.getElementById("time-left");
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timeLeft = 20;
+    let timerInterval;
+
+    const selectedLanguage = "<%= selectedLanguage %>";
+    startQuiz(selectedLanguage);
+
+    function startQuiz(language) {
+      currentQuestionIndex = 0;
+      score = 0;
+      nextButton.innerHTML = "Next";
+      showQuestion(language);
+      document.getElementById("quiz-container").style.display = "block";
+      startTimer();
+    }
+
+    function showQuestion(language) {
+      resetState();
+      let currentQuestion = questions[language][currentQuestionIndex];
+      let questionNo = currentQuestionIndex + 1;
+      questionElement.innerHTML = `Question ${questionNo}: ${currentQuestion.question}`;
+
+      currentQuestion.answers.forEach(answer => {
+        const button = document.createElement("button");
+        button.innerHTML = answer.text;
+        button.classList.add("btn");
+        answerButtons.appendChild(button);
+        if (answer.correct) {
+          button.dataset.correct = answer.correct;
+        }
+        button.addEventListener("click", selectAnswer);
+      });
+    }
+
+    function resetState() {
+      nextButton.style.display = "none";
+      while (answerButtons.firstChild) {
+        answerButtons.removeChild(answerButtons.firstChild);
+      }
+    }
+
+    function selectAnswer(e) {
+      clearInterval(timerInterval);
+      const selectedBtn = e.target;
+      const isCorrect = selectedBtn.dataset.correct === "true";
+      if (isCorrect) {
+        selectedBtn.classList.add("correct");
+        score++;
+      }
+      else {
+        selectedBtn.classList.add("incorrect");
+      }
+      Array.from(answerButtons.children).forEach(button => {
+        if (button.dataset.correct === "true") {
+          button.classList.add("correct");
+        }
+        button.disabled = true;
+      });
+      nextButton.style.display = "block";
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timeLeftElement.textContent = timeLeft;
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          handleNextButton(selectedLanguage);
+        }
+      }, 1000);
+    }
+
+    let percent = 0;
+    function showScore(language) {
+      resetState();
+      percent = parseInt((score / questions[language].length) * 100); 
+      questionElement.innerHTML = `You scored ${score} out of ${questions[language].length}!<br><br> Percentage: ${percent}&#37;`;
+      nextButton.innerHTML = "Play Again";
+      nextButton.style.display = "none";
+    }
+
+    function handleNextButton(language) {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions[language].length) {
+        timeLeft = 20;
+        startTimer();
+        showQuestion(language);
+      }
+      else {
+        showScore(language);
+      }
+    }
+
+    nextButton.addEventListener("click", () => {
+      clearInterval(timerInterval);
+      handleNextButton(selectedLanguage);
+    });
+  </script>
+</body>
+
+</html>
